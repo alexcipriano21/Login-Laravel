@@ -3,17 +3,21 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login - Laravel Auth</title>
+    <title>Sign Up - Laravel Auth</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
     <link rel="stylesheet" type="text/css" href="{{ asset('css/style.css') }}">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
 <body>
     <div class="wrapper">
-        <div class="form-wrapper sign-in active">
-            <form id="loginForm">
+        <div class="form-wrapper sign-up active">
+            <form id="registerForm">
                 @csrf
-                <h2>Sign In</h2>
+                <h2>Sign Up</h2>
+                <div class="input-group">
+                    <input type="text" name="nombre" id="nombre" required>
+                    <label>Full Name</label>
+                </div>
                 <div class="input-group">
                     <input type="email" name="email" id="email" required>
                     <label>Email</label>
@@ -23,37 +27,30 @@
                     <label>Password</label>
                 </div>
                 
-                <button type="submit" id="btnLogin">Sign In</button>
-
-                <div class="social-platform">
-                    <p>Or sign in with</p>
-                    <div class="social-icons">
-                        <a href="javascript:void(0)" onclick="loginGoogle()"><i class="fa-brands fa-google"></i></a>
-                    </div>
-                </div>
+                <button type="submit" id="btnRegister">Sign Up</button>
 
                 <div class="signUp-link">
-                    <p><a href="{{ route('recuperar') }}" class="forgotPassword-link">Forgot Password?</a></p>
-                    <p>Don't have an account? <a href="{{ route('register') }}">Sign Up</a></p>
+                    <p>Already have an account? <a href="{{ route('login') }}">Sign In</a></p>
                 </div>
             </form>
         </div>
     </div>
 
     <script>
-        document.getElementById('loginForm').addEventListener('submit', async (e) => {
+        document.getElementById('registerForm').addEventListener('submit', async (e) => {
             e.preventDefault();
-            const btn = document.getElementById('btnLogin');
+            const btn = document.getElementById('btnRegister');
             btn.disabled = true;
-            btn.innerText = 'Cargando...';
+            btn.innerText = 'Creando cuenta...';
 
             const formData = {
+                nombre: document.getElementById('nombre').value,
                 email: document.getElementById('email').value,
                 password: document.getElementById('password').value
             };
 
             try {
-                const response = await fetch('/api/login', {
+                const response = await fetch('/api/registro', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -65,26 +62,27 @@
 
                 const data = await response.json();
 
-                if (response.ok) {
-                    localStorage.setItem('token', data.access_token);
-                    localStorage.setItem('user', JSON.stringify(data.user));
-                    
+                if (response.status === 201) {
                     Swal.fire({
                         icon: 'success',
-                        title: '¡Bienvenido!',
-                        text: 'Inicio de sesión exitoso',
+                        title: '¡Éxito!',
+                        text: 'Cuenta creada correctamente. Ya puedes iniciar sesión.',
                         background: '#1b1b1b',
                         color: '#fff',
-                        timer: 2000,
+                        timer: 2500,
                         showConfirmButton: false
                     }).then(() => {
-                        window.location.href = '/home';
+                        window.location.href = '/login';
                     });
                 } else {
+                    let errorMsg = 'Error en el registro';
+                    if (data.email) errorMsg = data.email[0];
+                    else if (data.message) errorMsg = data.message;
+
                     Swal.fire({
                         icon: 'error',
                         title: 'Error',
-                        text: data.error || 'Credenciales incorrectas',
+                        text: errorMsg,
                         background: '#1b1b1b',
                         color: '#fff'
                     });
@@ -99,21 +97,9 @@
                 });
             } finally {
                 btn.disabled = false;
-                btn.innerText = 'Sign In';
+                btn.innerText = 'Sign Up';
             }
         });
-
-        async function loginGoogle() {
-            try {
-                const response = await fetch('/api/auth/google');
-                const data = await response.json();
-                if (data.url) {
-                    window.location.href = data.url;
-                }
-            } catch (error) {
-                console.error('Error al conectar con Google:', error);
-            }
-        }
     </script>
 </body>
 </html>

@@ -61,9 +61,13 @@ class AuthController extends Controller
             return response()->json(['error' => 'Contraseña incorrecta'], 401);
         }
 
-        $user = (new User())->forceFill((array) $usuarioData);
-        $token = auth('api')->login($user);
+        $user = User::find($usuarioData->id);
 
+        if ($user) {
+            auth('web')->login($user);
+        }
+
+        $token = auth('api')->login($user);
         return $this->respondWithToken($token, $user);
     }
 
@@ -145,16 +149,12 @@ class AuthController extends Controller
                 'nombre' => $googleUser->getName(),
                 'google_id' => $googleUser->getId(),
                 'estado' => 'activo',
-                'rol' => 'administrador'
+                'rol' => 'colaborador'
             ]
         );
 
-        $token = auth('api')->login($user);
+        auth('web')->login($user);
 
-        return response()->json([
-            'message' => 'Autenticación exitosa con Google',
-            'token' => $token,
-            'user' => $user
-        ]);
+        return redirect()->route('home');
     }
 }

@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -16,7 +17,7 @@
         .user-icon {
             font-size: 80px;
             margin-bottom: 20px;
-            color: #ef41a7; 
+            color: #ef41a7;
             background: linear-gradient(45deg, #ef41a7, #3b2072);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
@@ -63,20 +64,21 @@
         }
     </style>
 </head>
+
 <body>
     <div class="wrapper">
         <div class="home-content">
             <div class="user-icon">
                 <i class="fa-solid fa-circle-user"></i>
             </div>
-            
+
             <h1>¡Hola de nuevo!</h1>
             <p>Bienvenido al panel de control.</p>
 
             <div style="margin-bottom: 40px;">
                 <span class="badge">
                     <i class="fa-solid fa-user-tag" style="margin-right: 8px;"></i>
-                    <strong>{{ session('usuario') ?? 'Usuario' }}</strong>
+                    <strong>{{ auth('web')->user()->nombre ?? 'Usuario' }}</strong>
                 </span>
             </div>
 
@@ -86,4 +88,5 @@
         </div>
     </div>
 </body>
+
 </html>
