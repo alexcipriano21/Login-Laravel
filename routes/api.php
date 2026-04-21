@@ -6,7 +6,7 @@ use Illuminate\Support\Facades\Route;
 Route::post('/registro', [AuthController::class, 'registrar']);
 Route::post('/login', [AuthController::class, 'login']);
 
-Route::post('/olvidar-password', [AuthController::class, 'olvidarPassword']);
+Route::post('/olvide-password', [AuthController::class, 'olvidePassword']);
 Route::post('/actualizar-password', [AuthController::class, 'actualizarPassword']);
 
 Route::get('/auth/google', [AuthController::class, 'redireccionarGoogle']);
