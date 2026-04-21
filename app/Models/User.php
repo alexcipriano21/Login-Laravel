@@ -2,48 +2,60 @@
 
 namespace App\Models;
 
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
-use Database\Factories\UserFactory;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Tymon\JWTAuth\Contracts\JWTSubject;
 
-class User extends Authenticatable
+class User extends Authenticatable implements JWTSubject
 {
-    /** @use HasFactory<UserFactory> */
-    use HasFactory, Notifiable;
+    use Notifiable;
 
     /**
-     * The attributes that are mass assignable.
-     *
-     * @var list<string>
+     * Columnas alineadas exactamente con BD.sql
      */
     protected $fillable = [
-        'name',
+        'nombre',
         'email',
         'password',
+        'rol',
+        'estado',
+        'google_id',
+        'reset_token',
+        'reset_token_expires',
     ];
 
     /**
-     * The attributes that should be hidden for serialization.
-     *
-     * @var list<string>
+     * Atributos ocultos (por seguridad)
      */
     protected $hidden = [
         'password',
         'remember_token',
+        'reset_token',
     ];
 
     /**
-     * Get the attributes that should be cast.
-     *
-     * @return array<string, string>
+     * Conversión nativa de tipos de datos
      */
     protected function casts(): array
     {
         return [
-            'email_verified_at' => 'datetime',
+            'reset_token_expires' => 'datetime',
             'password' => 'hashed',
+        ];
+    }
+
+    public function getJWTIdentifier()
+    {
+        return $this->getKey();
+    }
+
+    public function getJWTCustomClaims()
+    {
+        return [
+            'nombre' => $this->nombre,
+            'email' => $this->email,
+            'rol' => $this->rol,
+            'estado' => $this->estado
         ];
     }
 }
